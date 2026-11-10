@@ -28,6 +28,9 @@
   .logo span{color:var(--accent)}
   .nav ul{display:flex;gap:32px;list-style:none;font-size:15px;font-weight:500}
   .nav ul a:hover{color:var(--accent2)}
+  .nav ul{align-items:center}
+  .nav-admin{border:1px solid rgba(255,255,255,.4);border-radius:999px;padding:6px 16px}
+  .nav-admin:hover{background:#fff;color:var(--ink)!important}
   .menu-btn{display:none;background:none;border:0;color:#fff;font-size:26px;cursor:pointer}
 
   /* Hero */
@@ -109,6 +112,8 @@
     .nav ul{display:none;position:absolute;top:72px;left:0;right:0;background:var(--ink);flex-direction:column;gap:0;padding:8px 24px 20px}
     .nav ul.open{display:flex}
     .nav ul li a{display:block;padding:12px 0;border-bottom:1px solid #2a2a30}
+    .nav ul{align-items:stretch}
+    .nav ul li a.nav-admin{border:0;border-radius:0;padding:12px 0;color:var(--accent2)}
     .menu-btn{display:block}
     .btn-ghost{margin-left:0;margin-top:12px}
   }
@@ -127,6 +132,7 @@
       <li><a href="#how">How we work</a></li>
       <li><a href="#exhibit">Exhibit</a></li>
       <li><a href="#contact">Contact</a></li>
+      <li><a href="/admin" class="nav-admin">Admin login</a></li>
     </ul>
   </div>
 </header>
