@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Liveworks Events — Billie Chatbot Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0d0d0f; --paper:#ffffff; --soft:#f3f2ef; --muted:#6b6b72;
+    --accent:#ff3d2e; --accent2:#ffb703; --line:#e4e2dd;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:Archivo,sans-serif;line-height:1.05;letter-spacing:-.02em}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+  /* Demo banner */
+  .demo-bar{background:var(--accent2);color:var(--ink);text-align:center;font-size:13px;font-weight:600;padding:8px 16px}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:50;background:rgba(13,13,15,.92);backdrop-filter:blur(8px);color:#fff}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .logo{font-family:Archivo;font-weight:900;font-size:26px;letter-spacing:-.04em}
+  .logo span{color:var(--accent)}
+  .nav ul{display:flex;gap:32px;list-style:none;font-size:15px;font-weight:500}
+  .nav ul a:hover{color:var(--accent2)}
+  .menu-btn{display:none;background:none;border:0;color:#fff;font-size:26px;cursor:pointer}
+
+  /* Hero */
+  .hero{background:var(--ink);color:#fff;position:relative;overflow:hidden;padding:120px 0 140px}
+  .hero::before{content:"";position:absolute;inset:-20%;background:
+     radial-gradient(circle at 75% 30%,rgba(255,61,46,.55),transparent 40%),
+     radial-gradient(circle at 20% 80%,rgba(255,183,3,.35),transparent 45%);filter:blur(20px)}
+  .hero .wrap{position:relative}
+  .eyebrow{text-transform:uppercase;letter-spacing:.2em;font-size:13px;font-weight:600;color:var(--accent2)}
+  .hero h1{font-size:clamp(48px,9vw,120px);font-weight:900;margin:18px 0 24px}
+  .hero p{font-size:clamp(17px,2vw,21px);max-width:620px;color:#d9d9de}
+  .btn{display:inline-block;margin-top:36px;padding:14px 28px;border-radius:999px;font-weight:600;font-size:15px;transition:.2s}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,61,46,.4)}
+  .btn-ghost{border:1px solid rgba(255,255,255,.4);color:#fff;margin-left:12px}
+  .btn-ghost:hover{background:#fff;color:var(--ink)}
+
+  /* Sections */
+  section{padding:100px 0}
+  .section-title{font-size:clamp(36px,5vw,64px);font-weight:900;margin-bottom:20px}
+  .lead{font-size:19px;color:var(--muted);max-width:720px}
+
+  /* Stats */
+  .stats{background:var(--soft)}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:48px}
+  .stat{border-top:3px solid var(--ink);padding-top:20px}
+  .stat .num{font-family:Archivo;font-weight:900;font-size:56px;line-height:1}
+  .stat .label{font-weight:600;margin-top:8px}
+  .stat .sub{color:var(--muted);font-size:14px}
+
+  /* Events */
+  .events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
+  .card{border-radius:16px;overflow:hidden;background:var(--paper);border:1px solid var(--line);transition:.25s}
+  .card:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.08)}
+  .card-img{aspect-ratio:16/10;display:flex;align-items:flex-end;padding:20px;color:#fff;font-family:Archivo;font-weight:900;font-size:26px;line-height:1.05}
+  .card-body{padding:20px}
+  .tag{display:inline-block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;background:var(--soft);padding:4px 10px;border-radius:999px;margin-bottom:10px}
+  .card-body h3{font-size:20px;margin-bottom:6px}
+  .meta{color:var(--muted);font-size:14px}
+  .g1{background:linear-gradient(135deg,#1d3557,#457b9d)}
+  .g2{background:linear-gradient(135deg,#ff3d2e,#ff8a3d)}
+  .g3{background:linear-gradient(135deg,#2a9d8f,#264653)}
+  .g4{background:linear-gradient(135deg,#6a4c93,#c06c84)}
+  .g5{background:linear-gradient(135deg,#0d0d0f,#3d3d45)}
+  .g6{background:linear-gradient(135deg,#e9c46a,#f4a261)}
+
+  /* How we work */
+  .how{background:var(--ink);color:#fff}
+  .how .lead{color:#b9b9c0}
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px}
+  .pillar h3{font-size:34px;font-weight:900;color:var(--accent);margin-bottom:12px}
+  .pillar p{color:#cfcfd5}
+
+  /* Exhibit CTA */
+  .cta{text-align:center}
+  .cta .lead{margin:0 auto}
+  .cta .btn-ghost{color:var(--ink);border-color:var(--ink)}
+  .cta .btn-ghost:hover{background:var(--ink);color:#fff}
+
+  /* FAQ prompts for testing the bot */
+  .test-panel{background:var(--soft)}
+  .prompts{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+  .prompt{background:#fff;border:1px solid var(--line);border-radius:999px;padding:10px 18px;font-size:14px;cursor:pointer;transition:.2s}
+  .prompt:hover{border-color:var(--ink)}
+  .prompt.copied{background:var(--ink);color:#fff}
+  .hint{font-size:13px;color:var(--muted);margin-top:16px}
+
+  /* Footer */
+  footer{background:var(--ink);color:#b9b9c0;padding:72px 0 32px;font-size:14px}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px}
+  footer h4{color:#fff;font-family:Archivo;text-transform:uppercase;letter-spacing:.1em;font-size:13px;margin-bottom:14px}
+  footer .logo{color:#fff;margin-bottom:12px;display:block}
+  .foot-bottom{border-top:1px solid #2a2a30;margin-top:48px;padding-top:24px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  @media (max-width:900px){
+    .stats-grid{grid-template-columns:repeat(2,1fr)}
+    .events-grid,.pillars{grid-template-columns:1fr}
+    .foot-grid{grid-template-columns:1fr}
+    .nav ul{display:none;position:absolute;top:72px;left:0;right:0;background:var(--ink);flex-direction:column;gap:0;padding:8px 24px 20px}
+    .nav ul.open{display:flex}
+    .nav ul li a{display:block;padding:12px 0;border-bottom:1px solid #2a2a30}
+    .menu-btn{display:block}
+    .btn-ghost{margin-left:0;margin-top:12px}
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-bar">Demo site for testing the Billie chatbot — all content is placeholder.</div>
+
+<header>
+  <div class="wrap nav">
+    <a href="#" class="logo">LIVE<span>WORKS</span></a>
+    <button class="menu-btn" aria-label="Menu" onclick="document.getElementById('menu').classList.toggle('open')">☰</button>
+    <ul id="menu">
+      <li><a href="#events">Our events</a></li>
+      <li><a href="#how">How we work</a></li>
+      <li><a href="#exhibit">Exhibit</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Events · Media · Experiences</div>
+    <h1>Make it live.</h1>
+    <p>We create trade shows and consumer events that bring industries together, inspire audiences and deliver results for exhibitors, sponsors and partners.</p>
+    <a href="#events" class="btn btn-primary">See our events</a>
+    <a href="#exhibit" class="btn btn-ghost">Book a stand</a>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--accent)">At a glance</div>
+    <h2 class="section-title">Big shows. Real results.</h2>
+    <div class="stats-grid">
+      <div class="stat"><div class="num">24</div><div class="label">Live events</div><div class="sub">UK and international</div></div>
+      <div class="stat"><div class="num">6</div><div class="label">Publications</div><div class="sub">Design, home and trade</div></div>
+      <div class="stat"><div class="num">40+</div><div class="label">Industry awards</div><div class="sub">And counting</div></div>
+      <div class="stat"><div class="num">1M+</div><div class="label">Visitors</div><div class="sub">To our events each year</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="events">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--accent)">Our events</div>
+    <h2 class="section-title">The portfolio</h2>
+    <p class="lead">From construction to cake, our shows cover the industries and passions that matter to millions.</p>
+    <div class="events-grid">
+      <a class="card" href="#"><div class="card-img g1">BuildX<br>Week</div><div class="card-body"><span class="tag">Trade</span><h3>BuildX Week London</h3><p class="meta">12–14 May 2027 · ExCeL London</p></div></a>
+      <a class="card" href="#"><div class="card-img g2">Home &amp;<br>Living Show</div><div class="card-body"><span class="tag">Consumer</span><h3>Home &amp; Living Show</h3><p class="meta">20 Mar – 5 Apr 2027 · Olympia London</p></div></a>
+      <a class="card" href="#"><div class="card-img g3">Future<br>Materials</div><div class="card-body"><span class="tag">Trade</span><h3>Future Materials Expo</h3><p class="meta">12–14 May 2027 · ExCeL London</p></div></a>
+      <a class="card" href="#"><div class="card-img g4">Bake<br>Festival</div><div class="card-body"><span class="tag">Consumer</span><h3>The Bake Festival</h3><p class="meta">8–10 Oct 2027 · ExCeL London</p></div></a>
+      <a class="card" href="#"><div class="card-img g5">Stone &amp;<br>Surface</div><div class="card-body"><span class="tag">Trade</span><h3>Surfaces Live</h3><p class="meta">28–30 Sep 2027 · NEC Birmingham</p></div></a>
+      <a class="card" href="#"><div class="card-img g6">Design<br>Week</div><div class="card-body"><span class="tag">Festival</span><h3>City Design Week</h3><p class="meta">18–20 May 2027 · Central London</p></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="eyebrow">How we work</div>
+    <h2 class="section-title">Great ideas + creativity + understanding</h2>
+    <p class="lead">Every project is delivered in-house, from concept to completion — live events, magazines and websites, for our own brands and for partners.</p>
+    <div class="pillars">
+      <div class="pillar"><h3>Create</h3><p>Original brands and content built by specialist teams who know their industries inside out.</p></div>
+      <div class="pillar"><h3>Collaborate</h3><p>Partnerships with broadcasters, trade bodies and brands that put our shows in front of millions.</p></div>
+      <div class="pillar"><h3>Innovate</h3><p>Reinventing formats, features and visitor experiences so every edition is better than the last.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="exhibit">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--accent)">Exhibit with us</div>
+    <h2 class="section-title">Put your brand in front of the right buyers.</h2>
+    <p class="lead">Shell scheme, space only and sponsorship packages available across our portfolio. Talk to our sales team or ask Billie in the chat.</p>
+    <a href="#contact" class="btn btn-primary">Enquire about a stand</a>
+    <a href="#" class="btn btn-ghost">Download exhibitor manual</a>
+  </div>
+</section>
+
+<section class="test-panel">
+  <div class="wrap">
+    <div class="eyebrow" style="color:var(--accent)">Testing Billie</div>
+    <h2 class="section-title" style="font-size:clamp(28px,4vw,44px)">Try these questions</h2>
+    <p class="lead">Click a question to copy it, then paste it into the chat widget.</p>
+    <div class="prompts">
+      <button class="prompt">When is the build-up for BuildX Week?</button>
+      <button class="prompt">How do I order furniture for my stand?</button>
+      <button class="prompt">What's the deadline for submitting RAMS?</button>
+      <button class="prompt">Can I bring a vehicle into the hall?</button>
+      <button class="prompt">What's included in a shell scheme stand?</button>
+      <button class="prompt">Where do I get exhibitor badges?</button>
+      <button class="prompt">How much is a 3x3 stand?</button>
+      <button class="prompt">I need to speak to a person</button>
+    </div>
+    <p class="hint">Edit these in the HTML to match Billie's knowledge base.</p>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="logo">LIVE<span style="color:var(--accent)">WORKS</span></span>
+        <p>Events, media and unforgettable experiences.</p>
+      </div>
+      <div>
+        <h4>London</h4>
+        <p>+44 (0)20 0000 0000<br>1 Example Street<br>London, EC1A 1AA</p>
+      </div>
+      <div>
+        <h4>Get in touch</h4>
+        <p>hello@example.com<br>sales@example.com</p>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 Liveworks Events (demo). All rights reserved.</span>
+      <span>Privacy · Cookies</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Copy test questions to clipboard
+  document.querySelectorAll('.prompt').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.textContent;
+      try { navigator.clipboard.writeText(t); } catch (e) {}
+      b.classList.add('copied'); var old = b.textContent; b.textContent = 'Copied ✓';
+      setTimeout(function () { b.textContent = old; b.classList.remove('copied'); }, 1200);
+    });
+  });
+</script>
+
+<!-- =====================================================
+     BILLIE CHATBOT WIDGET — PASTE YOUR EMBED CODE BELOW
+     (Replace this comment block with the <script> snippet
+      from Billie. Keep it just before </body>.)
+     ===================================================== -->
+
+
+
+<!-- ================ END BILLIE EMBED ================= -->
+
+</body>
+</html>
