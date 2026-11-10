@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — Chat Widget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#0d0d0f;--paper:#fff;--soft:#f3f2ef;--muted:#6b6b72;--accent:#ff3d2e;--line:#e4e2dd;--ok:#1a7f4b;--err:#c62828}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Inter,system-ui,sans-serif;background:var(--soft);color:var(--ink);line-height:1.5;min-height:100vh}
+  header{background:var(--ink);color:#fff}
+  .bar{max-width:880px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-family:Archivo;font-weight:900;font-size:22px;letter-spacing:-.04em;color:#fff;text-decoration:none}
+  .logo span{color:var(--accent)}
+  .bar a.small{color:#cfcfd5;font-size:14px;text-decoration:none}
+  .bar a.small:hover{color:#fff}
+  main{max-width:880px;margin:40px auto;padding:0 24px}
+  h1{font-family:Archivo;font-weight:900;font-size:36px;letter-spacing:-.02em;margin-bottom:6px}
+  .sub{color:var(--muted);margin-bottom:28px}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:28px}
+  label{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+  input[type=password]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;font-size:16px}
+  textarea{width:100%;min-height:260px;padding:14px;border:1px solid var(--line);border-radius:10px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;resize:vertical}
+  input:focus,textarea:focus{outline:2px solid var(--ink);outline-offset:1px}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px}
+  .btn{border:0;border-radius:999px;padding:12px 24px;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;display:inline-block}
+  .btn-primary{background:var(--accent);color:#fff}
+  .btn-primary:disabled{opacity:.6;cursor:default}
+  .btn-ghost{background:transparent;border:1px solid var(--ink);color:var(--ink)}
+  .btn-ghost:hover{background:var(--ink);color:#fff}
+  .toggle{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;cursor:pointer;margin:20px 0 0}
+  .toggle input{width:20px;height:20px;accent-color:var(--accent)}
+  .msg{font-size:14px;font-weight:500;margin-top:16px;min-height:21px}
+  .msg.ok{color:var(--ok)} .msg.err{color:var(--err)}
+  .meta{font-size:13px;color:var(--muted);margin-top:6px}
+  .status{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--soft);margin-bottom:20px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#aaa}
+  .status.live .dot{background:var(--ok)}
+  .help{margin-top:24px;font-size:14px;color:var(--muted)}
+  .help li{margin:4px 0 4px 18px}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="bar">
+    <a href="/" class="logo">LIVE<span>WORKS</span> <span style="color:#cfcfd5;font-family:Inter;font-weight:500;font-size:14px;letter-spacing:0">Admin</span></a>
+    <a href="/" class="small" target="_blank" rel="noopener">View site ↗</a>
+  </div>
+</header>
+
+<main>
+  <!-- Login -->
+  <section id="login">
+    <h1>Admin login</h1>
+    <p class="sub">Enter the admin password to manage the chat widget.</p>
+    <form class="panel" id="loginForm">
+      <label for="pw">Password</label>
+      <input type="password" id="pw" autocomplete="current-password" required>
+      <div class="row"><button class="btn btn-primary" type="submit" id="loginBtn">Log in</button></div>
+      <p class="msg" id="loginMsg"></p>
+    </form>
+  </section>
+
+  <!-- Editor -->
+  <section id="editor" class="hidden">
+    <h1>Chat widget</h1>
+    <p class="sub">Paste the embed code from your chatbot provider (Billie, Tidio, etc.). It's added to every page of the site.</p>
+    <div class="panel">
+      <div class="status" id="status"><span class="dot"></span><span id="statusText">Loading…</span></div>
+      <label for="code">Embed code</label>
+      <textarea id="code" spellcheck="false" placeholder="<script src=&quot;https://…/widget.js&quot; async></script>"></textarea>
+      <p class="meta" id="updated"></p>
+      <label class="toggle"><input type="checkbox" id="enabled"> Show the widget on the site</label>
+      <div class="row">
+        <button class="btn btn-primary" id="saveBtn">Save</button>
+        <a class="btn btn-ghost" href="/" target="_blank" rel="noopener">Test on site ↗</a>
+        <button class="btn btn-ghost" id="clearBtn" type="button">Clear code</button>
+        <button class="btn btn-ghost" id="logoutBtn" type="button" style="margin-left:auto">Log out</button>
+      </div>
+      <p class="msg" id="saveMsg"></p>
+    </div>
+    <div class="help">
+      <strong>Tips</strong>
+      <ul>
+        <li>Paste the full snippet, including the <code>&lt;script&gt;</code> tags.</li>
+        <li>After saving, open the site in a new tab (or hard refresh) to load the new widget.</li>
+        <li>If the widget doesn't appear, check the provider's allowed domains includes this site's URL.</li>
+        <li>Untick "Show the widget" to hide it without losing the code.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  var pwKey = 'adminPw';
+  var $ = function (id) { return document.getElementById(id); };
+  var password = '';
+
+  function getStored() { try { return sessionStorage.getItem(pwKey) || ''; } catch (e) { return ''; } }
+  function setStored(v) { try { v ? sessionStorage.setItem(pwKey, v) : sessionStorage.removeItem(pwKey); } catch (e) {} }
+
+  function msg(el, text, type) { el.textContent = text || ''; el.className = 'msg' + (type ? ' ' + type : ''); }
+
+  function post(payload) {
+    return fetch('/api/embed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (d) { d._status = r.status; return d; });
+    });
+  }
+
+  function showStatus(enabled, code) {
+    var live = enabled && code.trim();
+    $('status').className = 'status' + (live ? ' live' : '');
+    $('statusText').textContent = live ? 'Live on site' : (code.trim() ? 'Saved but hidden' : 'No widget set');
+  }
+
+  function fmt(ts) {
+    if (!ts) return '';
+    return 'Last saved ' + new Date(ts).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' });
+  }
+
+  function loadCurrent() {
+    return fetch('/api/embed', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.error) { msg($('saveMsg'), d.error, 'err'); return; }
+      $('code').value = d.code || '';
+      $('enabled').checked = !!d.enabled;
+      $('updated').textContent = fmt(d.updatedAt);
+      showStatus(!!d.enabled, d.code || '');
+    }).catch(function () { msg($('saveMsg'), 'Could not load the current settings.', 'err'); });
+  }
+
+  function enter() {
+    $('login').classList.add('hidden');
+    $('editor').classList.remove('hidden');
+    loadCurrent();
+  }
+
+  function login(pw, silent) {
+    $('loginBtn').disabled = true;
+    return post({ password: pw, verifyOnly: true }).then(function (d) {
+      $('loginBtn').disabled = false;
+      if (d.ok) { password = pw; setStored(pw); enter(); }
+      else { setStored(''); if (!silent) msg($('loginMsg'), d.error || 'Login failed.', 'err'); }
+    }).catch(function () {
+      $('loginBtn').disabled = false;
+      if (!silent) msg($('loginMsg'), 'Could not reach the server.', 'err');
+    });
+  }
+
+  $('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault(); msg($('loginMsg'), '');
+    login($('pw').value, false);
+  });
+
+  $('saveBtn').addEventListener('click', function () {
+    var code = $('code').value, enabled = $('enabled').checked;
+    $('saveBtn').disabled = true; msg($('saveMsg'), 'Saving…');
+    post({ password: password, code: code, enabled: enabled }).then(function (d) {
+      $('saveBtn').disabled = false;
+      if (d.ok) {
+        msg($('saveMsg'), 'Saved. Refresh the site to see the change.', 'ok');
+        $('updated').textContent = fmt(d.updatedAt);
+        showStatus(enabled, code);
+      } else if (d._status === 401) {
+        setStored(''); location.reload();
+      } else {
+        msg($('saveMsg'), d.error || 'Save failed.', 'err');
+      }
+    }).catch(function () { $('saveBtn').disabled = false; msg($('saveMsg'), 'Could not reach the server.', 'err'); });
+  });
+
+  $('clearBtn').addEventListener('click', function () {
+    if (confirm('Clear the embed code? Click Save afterwards to apply.')) { $('code').value = ''; $('enabled').checked = false; }
+  });
+
+  $('logoutBtn').addEventListener('click', function () { setStored(''); location.reload(); });
+
+  var stored = getStored();
+  if (stored) login(stored, true);
+})();
+</script>
+</body>
+</html>

@@ -230,7 +230,7 @@
     </div>
     <div class="foot-bottom">
       <span>© 2026 Liveworks Events (demo). All rights reserved.</span>
-      <span>Privacy · Cookies</span>
+      <span>Privacy · Cookies · <a href="/admin" style="text-decoration:underline">Admin</a></span>
     </div>
   </div>
 </footer>
@@ -247,15 +247,30 @@
   });
 </script>
 
-<!-- =====================================================
-     BILLIE CHATBOT WIDGET — PASTE YOUR EMBED CODE BELOW
-     (Replace this comment block with the <script> snippet
-      from Billie. Keep it just before </body>.)
-     ===================================================== -->
-
-
-
-<!-- ================ END BILLIE EMBED ================= -->
+<script>
+  // Chat widget loader — the embed code is managed at /admin
+  (function () {
+    fetch('/api/embed', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.enabled || !d.code || !d.code.trim()) return;
+        var tpl = document.createElement('template');
+        tpl.innerHTML = d.code;
+        // Scripts parsed via innerHTML don't run, so rebuild each one
+        tpl.content.querySelectorAll('script').forEach(function (old) {
+          var s = document.createElement('script');
+          for (var i = 0; i < old.attributes.length; i++) {
+            s.setAttribute(old.attributes[i].name, old.attributes[i].value);
+          }
+          if (!old.hasAttribute('async')) s.async = false; // keep snippet order
+          s.text = old.textContent;
+          old.replaceWith(s);
+        });
+        document.body.appendChild(tpl.content);
+      })
+      .catch(function () {});
+  })();
+</script>
 
 </body>
 </html>
